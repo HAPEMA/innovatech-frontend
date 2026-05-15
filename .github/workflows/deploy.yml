@@ -25,6 +25,9 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/innovatech-frontend:latest
+          build-args: |
+            VITE_API_DESPACHOS=${{ secrets.VITE_API_DESPACHOS }}
+            VITE_API_VENTAS=${{ secrets.VITE_API_VENTAS }}
 
       - name: Deploy en EC2 Frontend
         uses: appleboy/ssh-action@v1.0.0
