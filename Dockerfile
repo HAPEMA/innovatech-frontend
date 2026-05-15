@@ -3,6 +3,12 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# Build args para variables de entorno de Vite
+ARG VITE_API_DESPACHOS
+ARG VITE_API_VENTAS
+ENV VITE_API_DESPACHOS=$VITE_API_DESPACHOS
+ENV VITE_API_VENTAS=$VITE_API_VENTAS
+
 # Copiar dependencias primero (cache de capas)
 COPY package*.json ./
 RUN npm ci
@@ -14,13 +20,10 @@ RUN npm run build
 # ========== STAGE 2: Runtime ==========
 FROM nginx:alpine
 
-# Usuario no root (seguridad)
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copiar build desde stage anterior
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Configuración nginx para React Router
 RUN echo 'server { \
     listen 80; \
     location / { \
