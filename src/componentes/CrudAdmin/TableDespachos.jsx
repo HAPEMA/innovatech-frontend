@@ -20,7 +20,12 @@ export const TableDespachos = () => {
         },
       });
       console.log(response.data);
-      setDespachos(response.data);
+      const data = response.data;
+      // La API puede devolver el array directamente o envuelto en una propiedad
+      const lista = Array.isArray(data)
+        ? data
+        : data?.content ?? data?.data ?? data?.despachos ?? [];
+      setDespachos(lista);
     } catch (error) {
       console.error("Error al obtener despachos:", error);
     }

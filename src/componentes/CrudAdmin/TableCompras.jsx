@@ -43,7 +43,12 @@ export const TableCompras = () => {
         },
       });
       console.log(response.data);
-      setVentas(response.data);
+      const data = response.data;
+      // La API puede devolver el array directamente o envuelto en una propiedad
+      const lista = Array.isArray(data)
+        ? data
+        : data?.content ?? data?.data ?? data?.ventas ?? [];
+      setVentas(lista);
     } catch (error) {
       // TODO: Remover mock data cuando el endpoint esté disponible en el backend
       console.warn(
