@@ -26,16 +26,13 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 RUN echo 'server { \
     listen 80; \
+    location /api/ { \
+        proxy_pass http://10.0.135.240:8081/api/; \
+    } \
     location / { \
         root /usr/share/nginx/html; \
         index index.html; \
         try_files $uri $uri/ /index.html; \
-    } \
-    location /api-despachos/ { \
-        proxy_pass http://10.0.135.240:8081/; \
-    } \
-    location /api-ventas/ { \
-        proxy_pass http://10.0.135.240:8082/; \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
