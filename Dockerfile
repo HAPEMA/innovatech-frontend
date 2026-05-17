@@ -31,6 +31,12 @@ RUN echo 'server { \
         index index.html; \
         try_files $uri $uri/ /index.html; \
     } \
+    location /api-despachos/ { \
+        proxy_pass http://10.0.135.240:8081/; \
+    } \
+    location /api-ventas/ { \
+        proxy_pass http://10.0.135.240:8082/; \
+    } \
 }' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
