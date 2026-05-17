@@ -3,8 +3,10 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { API_DESPACHOS, API_VENTAS } from "../../config/api";
 
+// venta puede ser null cuando se crea un despacho directamente desde TableDespachos
 export const FormDespacho = ({ venta, onClose }) => {
   const { register, handleSubmit } = useForm();
+  const esStandalone = !venta; // true = creación sin compra vinculada
 
   const onSubmit = async (data) => {
     console.log("onSubmit ejecutado");
@@ -13,34 +15,35 @@ export const FormDespacho = ({ venta, onClose }) => {
       patenteCamion: data.patenteCamion,
       intento: 0,
       entregado: false,
-      idCompra: venta.idVenta,
-      direccionCompra: venta.direccionCompra,
-      valorCompra: venta.valorCompra,
-    };
-
-    const jsonDataSales = {
-      despachoGenerado: true,
+      idCompra: esStandalone ? Number(data.idCompra) : venta.idVenta,
+      direccionCompra: esStandalone ? data.direccionCompra : venta.direccionCompra,
+      valorCompra: esStandalone ? Number(data.valorCompra) : venta.valorCompra,
     };
 
     console.log("Datos del formulario:", jsonData);
 
     try {
-      await axios.put(
-        `${API_VENTAS}/api/v1/ventas/${venta.idVenta}`,
-        jsonDataSales,
-        {
-          headers:{
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
+      // Solo actualizamos la venta si venimos desde TableCompras
+      if (!esStandalone) {
+        await axios.put(
+          `${API_VENTAS}/api/v1/ventas/${venta.idVenta}`,
+          { despachoGenerado: true },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
       }
-        }
-      );
+
       await axios.post(`${API_DESPACHOS}/api/v1/despachos`, jsonData, {
-        headers:{
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-    }
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
       });
+
       Swal.fire({
         title: "Despacho registrado 🛻!",
         text: "El despacho ha sido generado con éxito en la base de datos",
@@ -49,9 +52,16 @@ export const FormDespacho = ({ venta, onClose }) => {
       });
     } catch (error) {
       console.error("Error en la solicitud:", error);
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo registrar el despacho.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
     }
     onClose();
   };
+
   return (
     <>
       <form
@@ -83,30 +93,57 @@ export const FormDespacho = ({ venta, onClose }) => {
           <label className="block font-bold mb-2">
             Orden de compra asociado
           </label>
-          <input
-            type="number"
-            disabled={true}
-            value={venta.idVenta}
-            className="border border-gray-300 rounded-lg block w-full text-slate-400 p-1"
-          />
+          {esStandalone ? (
+            <input
+              type="number"
+              placeholder="Ingresa el ID de la orden de compra"
+              className="border border-gray-300 rounded-lg block w-full p-1"
+              {...register("idCompra", { required: true })}
+            />
+          ) : (
+            <input
+              type="number"
+              disabled={true}
+              value={venta.idVenta}
+              className="border border-gray-300 rounded-lg block w-full text-slate-400 p-1"
+            />
+          )}
         </div>
         <div className="mb-5">
           <label className="block font-bold mb-2">Dirección de entrega</label>
-          <input
-            type="text"
-            disabled={true}
-            value={venta.direccionCompra}
-            className="border border-gray-300 rounded-lg block w-full text-slate-400 p-1"
-          />
+          {esStandalone ? (
+            <input
+              type="text"
+              placeholder="Ingresa la dirección de entrega"
+              className="border border-gray-300 rounded-lg block w-full p-1"
+              {...register("direccionCompra", { required: true })}
+            />
+          ) : (
+            <input
+              type="text"
+              disabled={true}
+              value={venta.direccionCompra}
+              className="border border-gray-300 rounded-lg block w-full text-slate-400 p-1"
+            />
+          )}
         </div>
         <div className="mb-5">
           <label className="block font-bold mb-2">Valor de compra</label>
-          <input
-            type="number"
-            value={venta.valorCompra}
-            className="border border-gray-300 rounded-lg block w-full text-slate-400 p-1"
-            disabled={true}
-          />
+          {esStandalone ? (
+            <input
+              type="number"
+              placeholder="Ingresa el valor de la compra"
+              className="border border-gray-300 rounded-lg block w-full p-1"
+              {...register("valorCompra", { required: true })}
+            />
+          ) : (
+            <input
+              type="number"
+              value={venta.valorCompra}
+              className="border border-gray-300 rounded-lg block w-full text-slate-400 p-1"
+              disabled={true}
+            />
+          )}
         </div>
 
         <button

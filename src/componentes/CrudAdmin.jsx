@@ -1,8 +1,5 @@
+import { Outlet } from "react-router-dom";
 import Navbar from "./Layouts/Navbar";
-import Footer from "./Layouts/Footer";
-
-import { PruebaCards } from "./CrudAdmin/PruebaCards";
-import Reviews from "./Layouts/Reviews";
 
 export const CrudAdmin = () => {
   return (
@@ -15,11 +12,8 @@ export const CrudAdmin = () => {
 
         {/* Columna 2: Contenido principal (ocupa el espacio restante) */}
         <div className="overflow-y-auto p-6">
-          {" "}
-          {/* Por si el contenido es muy largo */}
-          <PruebaCards />
-          <Reviews />
-          <Footer />
+          {/* Las rutas hijas renderizan aquí */}
+          <Outlet />
         </div>
       </div>
     </>
