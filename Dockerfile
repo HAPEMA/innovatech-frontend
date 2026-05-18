@@ -29,6 +29,9 @@ RUN echo 'server { \
     location /api/ { \
         proxy_pass http://10.0.135.240:8081/api/; \
     } \
+    location /api/v1/ventas { \
+        proxy_pass http://10.0.135.240:8082/api/v1/ventas; \
+    } \
     location / { \
         root /usr/share/nginx/html; \
         index index.html; \
