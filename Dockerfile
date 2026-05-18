@@ -26,11 +26,11 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 RUN echo 'server { \
     listen 80; \
-    location /api/ { \
-        proxy_pass http://10.0.135.240:8081/api/; \
+    location /api/v1/ventas/ { \
+        proxy_pass http://10.0.135.220:8082/api/v1/ventas/; \
     } \
-    location /api/v1/ventas { \
-        proxy_pass http://10.0.135.240:8082/api/v1/ventas; \
+    location /api/ { \
+        proxy_pass http://10.0.135.220:8081/api/; \
     } \
     location / { \
         root /usr/share/nginx/html; \
@@ -38,7 +38,6 @@ RUN echo 'server { \
         try_files $uri $uri/ /index.html; \
     } \
 }' > /etc/nginx/conf.d/default.conf
-
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
