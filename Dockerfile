@@ -24,20 +24,23 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-RUN echo 'server { \
+ARG BACKEND_HOST_DESPACHOS
+ARG BACKEND_HOST_VENTAS
+
+RUN echo "server { \
     listen 80; \
     location /api/v1/ventas/ { \
-        proxy_pass $EC2_BACKEND_HOST:8082/api/v1/ventas/; \
+        proxy_pass http://${BACKEND_HOST_VENTAS}:8082/api/v1/ventas/; \
     } \
     location /api/ { \
-        proxy_pass $EC2_BACKEND_HOST:8081/api/; \
+        proxy_pass http://${BACKEND_HOST_DESPACHOS}:8081/api/; \
     } \
     location / { \
         root /usr/share/nginx/html; \
         index index.html; \
-        try_files $uri $uri/ /index.html; \
+        try_files \$uri \$uri/ /index.html; \
     } \
-}' > /etc/nginx/conf.d/default.conf
+}" > /etc/nginx/conf.d/default.conf
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
