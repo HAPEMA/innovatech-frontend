@@ -28,6 +28,8 @@ jobs:
           build-args: |
             VITE_API_DESPACHOS=${{ secrets.VITE_API_DESPACHOS }}
             VITE_API_VENTAS=${{ secrets.VITE_API_VENTAS }}
+            BACKEND_HOST_DESPACHOS=${{ secrets.EC2_BACKEND_HOST_DESPACHOS }}
+            BACKEND_HOST_VENTAS=${{ secrets.EC2_BACKEND_HOST_VENTAS }}
 
       - name: Deploy en EC2 Frontend
         uses: appleboy/ssh-action@v1.0.0
