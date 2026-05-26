@@ -4,7 +4,6 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { API_DESPACHOS } from "../../config/api";
 import { Modal } from "./Modal";
-import { FormCierreDespacho } from "./FormCierreDespacho";
 import { FormDespacho } from "./FormDespacho";
 
 export const TableDespachos = () => {
@@ -14,14 +13,9 @@ export const TableDespachos = () => {
   const fetchDespachos = async () => {
     try {
       const response = await axios.get(`${API_DESPACHOS}/api/v1/despachos`, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
       });
-      console.log(response.data);
       const data = response.data;
-      // La API puede devolver el array directamente o envuelto en una propiedad
       const lista = Array.isArray(data)
         ? data
         : data?.content ?? data?.data ?? data?.despachos ?? [];
@@ -31,23 +25,18 @@ export const TableDespachos = () => {
     }
   };
 
-  useEffect(() => {
-    fetchDespachos();
-  }, []);
+  useEffect(() => { fetchDespachos(); }, []);
 
-  // Modal para editar/cerrar despacho existente
-  const [openModal, setOpenModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
   const [despachoSeleccionado, setDespachoSeleccionado] = useState(null);
 
-  const handleAbrirModal = (despacho) => {
+  const handleEditar = (despacho) => {
     setDespachoSeleccionado(despacho);
-    setOpenModal(true);
+    setOpenEditModal(true);
   };
 
-  // Modal para crear nuevo despacho
   const [openNuevoModal, setOpenNuevoModal] = useState(false);
 
-  // Eliminar despacho
   const handleEliminar = async (id) => {
     const confirm = await Swal.fire({
       title: "¿Eliminar despacho?",
@@ -63,26 +52,13 @@ export const TableDespachos = () => {
     if (confirm.isConfirmed) {
       try {
         await axios.delete(`${API_DESPACHOS}/api/v1/despachos/${id}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
         });
-        Swal.fire({
-          title: "Eliminado",
-          text: "El despacho ha sido eliminado.",
-          icon: "success",
-          confirmButtonText: "Aceptar",
-        });
+        Swal.fire({ title: "Eliminado", text: "El despacho ha sido eliminado.", icon: "success", confirmButtonText: "Aceptar" });
         fetchDespachos();
       } catch (error) {
         console.error("Error al eliminar despacho:", error);
-        Swal.fire({
-          title: "Error",
-          text: "No se pudo eliminar el despacho.",
-          icon: "error",
-          confirmButtonText: "Aceptar",
-        });
+        Swal.fire({ title: "Error", text: "No se pudo eliminar el despacho.", icon: "error", confirmButtonText: "Aceptar" });
       }
     }
   };
@@ -92,7 +68,6 @@ export const TableDespachos = () => {
       <section className="grid text-center grid-cols-12 mb-8">
         <div className="col-span-12 flex justify-center">
           <div className="col-span-10 p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-white h-full overflow-hidden">
-            {/* Barra superior: volver + nuevo despacho */}
             <div className="flex justify-between items-center p-2 mb-2">
               <button
                 onClick={() => navigate("/")}
@@ -107,7 +82,6 @@ export const TableDespachos = () => {
                 + Nuevo Despacho
               </button>
             </div>
-
 
             <table className="table-fixed">
               <thead>
@@ -125,36 +99,22 @@ export const TableDespachos = () => {
               <tbody>
                 {despachos.map((despacho) => (
                   <tr key={despacho.idDespacho}>
+                    <td className="pr-10 py-10 items-center">{despacho.idDespacho}</td>
+                    <td className="pr-10 py-10 items-center">{despacho.idCompra}</td>
+                    <td className="pr-10 py-10 items-center">{despacho.direccionCompra}</td>
+                    <td className="pr-10 py-10 items-center">{despacho.fechaDespacho}</td>
+                    <td className="pr-10 py-10 items-center">{despacho.patenteCamion}</td>
                     <td className="pr-10 py-10 items-center">
-                      {despacho.idDespacho}
+                      {despacho.entregado ? "Despacho entregado" : "Despacho pendiente"}
                     </td>
-                    <td className="pr-10 py-10 items-center">
-                      {despacho.idCompra}
-                    </td>
-                    <td className="pr-10 py-10 items-center">
-                      {despacho.direccionCompra}
-                    </td>
-                    <td className="pr-10 py-10 items-center">
-                      {despacho.fechaDespacho}
-                    </td>
-                    <td className="pr-10 py-10 items-center">
-                      {despacho.patenteCamion}
-                    </td>
-                    <td className="pr-10 py-10 items-center">
-                      {despacho.entregado
-                        ? "Despacho entregado"
-                        : "Despacho pendiente"}
-                    </td>
-                    <td className="pr-10 py-10 items-center">
-                      {despacho.intento}
-                    </td>
+                    <td className="pr-10 py-10 items-center">{despacho.intento}</td>
                     <td className="pr-4 py-10 items-center">
                       <div className="flex flex-col gap-2">
                         <button
-                          onClick={() => handleAbrirModal(despacho)}
+                          onClick={() => handleEditar(despacho)}
                           className="py-1 bg-orange-200 px-4 rounded-xl shadow-md hover:bg-orange-300/70 transition-all duration-300"
                         >
-                          Cerrar despacho
+                          Editar
                         </button>
                         <button
                           onClick={() => handleEliminar(despacho.idDespacho)}
@@ -172,29 +132,20 @@ export const TableDespachos = () => {
         </div>
       </section>
 
-      {/* Modal para editar/cerrar despacho existente */}
-      <Modal
-        onClose={() => setOpenModal(false)}
-        open={openModal}
-      >
+      <Modal onClose={() => setOpenEditModal(false)} open={openEditModal}>
         {despachoSeleccionado && (
-          <FormCierreDespacho
+          <FormDespacho
             despacho={despachoSeleccionado}
             onClose={() => {
-              setOpenModal(false);
+              setOpenEditModal(false);
               fetchDespachos();
             }}
           />
         )}
       </Modal>
 
-      {/* Modal para crear nuevo despacho */}
-      <Modal
-        onClose={() => setOpenNuevoModal(false)}
-        open={openNuevoModal}
-      >
+      <Modal onClose={() => setOpenNuevoModal(false)} open={openNuevoModal}>
         <FormDespacho
-          venta={null}
           onClose={() => {
             setOpenNuevoModal(false);
             fetchDespachos();

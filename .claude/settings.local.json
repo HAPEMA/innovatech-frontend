@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"F:\\\\Programación\\\\Duoc\\\\Develop\\\\ISY1101_EP2_Proyecto Semestral\\\\proyecto_semestral\\\\front_despacho\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)"
+    ]
+  }
+}
