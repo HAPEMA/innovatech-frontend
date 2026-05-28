@@ -9,9 +9,10 @@ export const FormVenta = ({ venta, onClose }) => {
 
   const onSubmit = async (data) => {
     const jsonData = {
-      fecha: data.fecha,
-      direccion: data.direccion,
-      valorTotal: Number(data.valorTotal),
+      direccionCompra: data.direccion,
+      valorCompra: Number(data.valorTotal),
+      fechaCompra: data.fecha,
+      despachoGenerado: esEditar ? (venta.despachoGenerado ?? false) : false,
     };
 
     try {
