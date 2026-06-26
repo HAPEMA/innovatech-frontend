@@ -1,0 +1,37 @@
+{
+  "family": "innovatech-frontend",
+  "taskRoleArn": "arn:aws:iam::881196376889:role/LabRole",
+  "executionRoleArn": "arn:aws:iam::881196376889:role/LabRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "volumes": [],
+  "containerDefinitions": [
+    {
+      "name": "innovatech-frontend",
+      "image": "881196376889.dkr.ecr.us-east-1.amazonaws.com/innovatech_frontend:latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/innovatech_frontend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "systemControls": []
+    }
+  ]
+}
