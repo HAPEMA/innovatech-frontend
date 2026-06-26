@@ -12,22 +12,18 @@ RUN npm run build
 
 # ========== STAGE 2: Runtime ==========
 FROM nginx:alpine
-ARG BACKEND_HOST_DESPACHOS
-ARG BACKEND_HOST_VENTAS
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 COPY --from=builder /app/dist /usr/share/nginx/html
 RUN echo "server { \
     listen 80; \
-    location /api/v1/ventas { \
-        proxy_pass http://${BACKEND_HOST_VENTAS}:8082/api/v1/ventas; \
-    } \
-    location /api/ { \
-        proxy_pass http://${BACKEND_HOST_DESPACHOS}:8081/api/; \
-    } \
+    server_name _; \
+    root /usr/share/nginx/html; \
+    index index.html; \
     location / { \
-        root /usr/share/nginx/html; \
-        index index.html; \
         try_files \$uri \$uri/ /index.html; \
+    } \
+    location /health { \
+        return 200 'OK'; \
+        add_header Content-Type text/plain; \
     } \
 }" > /etc/nginx/conf.d/default.conf
 EXPOSE 80
